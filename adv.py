@@ -65,7 +65,6 @@ while len(traversal_graph) < 500:
         v = path[-1]
         if v not in visited:
             visited.add(v)
-            print(type(v))
             if '?' in traversal_graph[v].values():
                 break
             for neighbor in traversal_graph[v].values():
@@ -91,17 +90,17 @@ while len(traversal_graph) < 500:
         # player.travel(key_list[value_list.index(element)])
 
 
-
-    backtrack = traversal_path[::-1]
-    for path in backtrack:
-        player.travel(opposites_dict[path])
-        traversal_path.append(opposites_dict[path])
-        if '?' in traversal_graph[player.current_room.id].values():
-            print('yup')
-            break
-        else:
-            print('nope')
-            pass
+    #
+    # backtrack = traversal_path[::-1]
+    # for path in backtrack:
+    #     player.travel(opposites_dict[path])
+    #     traversal_path.append(opposites_dict[path])
+    #     if '?' in traversal_graph[player.current_room.id].values():
+    #         print('yup')
+    #         break
+    #     else:
+    #         print('nope')
+    #         pass
 
 
 
