@@ -33,18 +33,22 @@ exits = player.current_room.get_exits()
 for element in exits:
     if element not in traversal_graph[player.current_room.id].keys():
         traversal_graph[player.current_room.id][element] = '?'
+room_coords = {}
+for i in range(500):
+    room_coords[i] = None
+room_coords[0] = [0, 0]
+true_path = []
 
 while len(traversal_graph) < 500:
     while True:
         exits = player.current_room.get_exits()
         new_exits = [element for element in exits if traversal_graph[player.current_room.id][element] == '?']
-        print(f' new exits:{new_exits}')
-        print(player.current_room.id)
         if len(new_exits) == 0:
             break
         direction_of_travel = random.choice(new_exits)
         last_room = player.current_room.id
         player.travel(direction_of_travel)
+        room_coords[player.current_room.id] = player.location
         traversal_path.append(direction_of_travel)
         traversal_graph[last_room][direction_of_travel] = player.current_room.id
         if traversal_graph.get(player.current_room.id) == None:
@@ -56,7 +60,6 @@ while len(traversal_graph) < 500:
             if element not in traversal_graph[player.current_room.id].keys():
                 traversal_graph[player.current_room.id][element] = '?'
         traversal_graph[player.current_room.id][opposites_dict[direction_of_travel]] = last_room
-
     q = Queue()
     q.enqueue([player.current_room.id])
     visited = set()
@@ -66,23 +69,42 @@ while len(traversal_graph) < 500:
         if v not in visited:
             visited.add(v)
             if '?' in traversal_graph[v].values():
-                break
+                candidates = []
+                for key, value in traversal_graph[v].items():
+                    if value == '?':
+                        candidates.append(key)
+                test_coords = room_coords[v]
+                n_neighbor = [test_coords[0], test_coords[1] + 1]
+                e_neighbor = [test_coords[0] + 1, test_coords[1]]
+                s_neighbor = [test_coords[0], test_coords[1] - 1]
+                w_neighbor = [test_coords[0] - 1, test_coords[1]]
+                for key in candidates:
+                    if key == 'n':
+                        if n_neighbor not in room_coords.values():
+                            true_path = path
+                    if key == 'e':
+                        if e_neighbor not in room_coords.values():
+                            true_path = path
+                    if key == 's':
+                        if s_neighbor not in room_coords.values():
+                            true_path = path
+                    if key == 'w':
+                        if w_neighbor not in room_coords.values():
+                            true_path = path
+                if len(true_path) > 0:
+                    break
             for neighbor in traversal_graph[v].values():
                 path_copy = path.copy()
                 path_copy.append(neighbor)
                 q.enqueue(path_copy)
-    directed_path = []
-    print(path)
-    for element in path[1:]:
-        print(traversal_graph[player.current_room.id])
+    for element in true_path[1:]:
         for key, value in traversal_graph[player.current_room.id].items():
-            print(element)
-            print(value)
             if element == value:
                 direction_to_go = key
                 break
         player.travel(direction_to_go)
         traversal_path.append(direction_to_go)
+        true_path.clear()
 
         # key_list = list(traversal_graph[player.current_room.id].keys())
         # value_list = list(traversal_graph[player.current_room.id].values())
@@ -126,12 +148,12 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
